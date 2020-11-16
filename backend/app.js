@@ -2,6 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+mongoose.connect('mongodb+srv://Schiche24:ecG7pueX0S6u0573@cluster0.gwhtj.mongodb.net/piquante?retryWrites=true&w=majority', 
+   {  useNewUrlParser: true,
+      useUnifiedTopology: true})
+   .then(() => console.log('Connexion à MongoDB réussi !'))
+   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 const app = express();
 
@@ -17,5 +22,6 @@ app.use((req, res) => {
 });
 
 app.use(bodyParser.json());
+
 
 module.exports = app;
