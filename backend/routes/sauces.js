@@ -3,7 +3,7 @@ const router = express.Router();
 
 const saucesCtrl = require('../controllers/sauces');
 
-const multer = require('../middleware/mutler-config');
+const multer = require('../middleware/multer-config');
 
 router.get('/', saucesCtrl.getAllSauces);
 router.post('/', multer, saucesCtrl.createSauce);
