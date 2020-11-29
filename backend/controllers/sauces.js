@@ -1,11 +1,13 @@
 const Sauce = require('../models/Sauce');
 const fs = require('fs');
+const sanitize = require('mongo-sanitize');
 const User = require('../models/User');
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
+    const cleanSauceObject = sanitize(sauceObject);
     const sauce = new Sauce({
-        ...sauceObject,
+        ...cleanSauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
     sauce.save()
@@ -17,7 +19,8 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.getOneSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id})
+    const cleanSauceId = sanitize(req.params.id);
+    Sauce.findOne({ _id: cleanSauceId})
         .then(sauce => res.status(200).json(sauce))
         .catch(error => {
             console.log(error);
@@ -35,9 +38,10 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
+    const cleanSauce = sanitize(req.body.sauce);
     const sauceObject = req.file ?
     {
-        ...JSON.parse(req.body.sauce),
+        ...JSON.parse(cleanSauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     }   : { ...req.body }
     Sauce.updateOne({_id: req.params.id}, {...sauceObject, _id: req.params.id })
@@ -46,8 +50,9 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.deleteSauce = (req, res, next) => {
-    Sauce.findOne({_id: req.params.id})
-        .then(sauce =>{
+    const cleanSauceId = sanitize(req.params.id);
+    Sauce.findOne({_id: cleanSauceId})
+        .then(sauce => {
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () =>{
                 Sauce.deleteOne({ _id: req.params.id })
@@ -61,18 +66,18 @@ exports.deleteSauce = (req, res, next) => {
 exports.likeSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
         .then(sauce => {
-            const userId = req.body.userId;
-            const like = req.body.likes;
+            const userId = sanitize(req.body.userId);
+            const like = sanitize(req.body.like);
             
             usersLiked = sauce.usersLiked;
             usersDisliked = sauce.usersDisliked;
-            likesCount = sauce.likes;
-            dislikesCount = sauce.dislikes;
+            likes = sauce.likes;
+            dislikes = sauce.dislikes;
 
 
             switch (req.body.like) {
                 case 1:
-                    Sauce.updateOne({_id: req.params.id}, { $push: { usersLiked: userId } , $inc: { likesCount : 1} })
+                    Sauce.updateOne({ _id: req.params.id }, { $push: { usersLiked: userId } , $inc: { likes : 1} })
                         .then(() => res.status(200).json({ message : 'Sauce liked !' }))
                         .catch(error => {
                             console.log(error);
@@ -82,7 +87,7 @@ exports.likeSauce = (req, res, next) => {
         
                 case 0:
                     if (usersLiked.includes(userId)) {
-                        Sauce.updateOne({ _id: req.params.id }, { $pull : { usersLiked: userId }, $inc: { likesCount : -1 } })
+                        Sauce.updateOne({ _id: req.params.id }, { $pull : { usersLiked: userId }, $inc: { likes : -1 } })
                             .then(() => res.status(200).json({ message: 'Like removed !'}))
                             .catch(error => {
                                 console.log(error);
@@ -90,7 +95,7 @@ exports.likeSauce = (req, res, next) => {
                             })
                     } 
                     else if (usersDisliked.includes(userId) ){
-                        Sauce.updateOne({ _id: req.params.id }, { $pull: { usersDisliked : userId }, $inc: { dislikesCount : -1 } })
+                        Sauce.updateOne({ _id: req.params.id }, { $pull: { usersDisliked : userId }, $inc: { dislikes : -1 } })
                             .then(() => res.status(200).json({ message: 'Dislike removed !' }))
                             .catch(error => {
                                 console.log(error);
@@ -100,7 +105,7 @@ exports.likeSauce = (req, res, next) => {
                     break;
                 
                 case -1:
-                    Sauce.updateOne({ _id: req.params.id }, {  $push: { usersDisliked: userId }, $inc: { dislikesCount: 1 } })
+                    Sauce.updateOne({ _id: req.params.id }, {  $push: { usersDisliked: userId }, $inc: { dislikes: 1 } })
                         .then(() => res.status(200).json({ message: 'Sauce disliked !' }))
                         .catch(error => {
                             console.log(error);
