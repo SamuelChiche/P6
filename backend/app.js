@@ -1,12 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const path = require('path');
+
+const authRoutes = require('./routes/auth');
+const saucesRoutes = require('./routes/sauces');
+
+mongoose.set('useCreateIndex', true);
 
 mongoose.connect('mongodb+srv://Schiche24:ecG7pueX0S6u0573@cluster0.gwhtj.mongodb.net/piquante?retryWrites=true&w=majority', 
    {  useNewUrlParser: true,
       useUnifiedTopology: true})
-   .then(() => console.log('Connexion à MongoDB réussi !'))
-   .catch(() => console.log('Connexion à MongoDB échouée !'));
+   .then(() => console.log('Connection to MongoDB succesful !'))
+   .catch(() => console.log('Connection to MongoDB failed !'));
 
 const app = express();
 
@@ -17,11 +23,12 @@ app.use((req, res, next) => {
    next();
  });
 
-app.use((req, res) => {
-   res.json({ message: 'Votre requête a bien été reçue !' }); 
-});
-
 app.use(bodyParser.json());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/sauces', saucesRoutes);
 
 
 module.exports = app;
