@@ -1,11 +1,14 @@
+// Node JS Package
 const multer = require('multer');
 
+// Extensions prises en comptes
 const MIME_TYPES = {
     'image/jpg': 'jpg',
     'image/jpeg': 'jpg',
     'image/png': 'png'
 };
 
+// Configuration du stockage des images
 const storage = multer.diskStorage({
     destination: (req, file, callback) =>{
         callback(null, 'images')

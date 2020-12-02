@@ -1,5 +1,7 @@
+// Node JS package
 const mongoose = require('mongoose');
 
+// Création du schema de sauce pour la base de données
 const sauceSchema = mongoose.Schema({
     userId: {type: String, required: true},
     name: {type: String, required: true},
