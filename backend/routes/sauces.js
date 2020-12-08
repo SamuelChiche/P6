@@ -1,12 +1,15 @@
+// Node JS Package
 const express = require('express');
 const router = express.Router();
-
-const auth = require('../middleware/auth');
-
-const saucesCtrl = require('../controllers/sauces');
-
 const multer = require('../middleware/multer-config');
 
+// Auth middleware
+const auth = require('../middleware/auth');
+
+// Sauces controllers
+const saucesCtrl = require('../controllers/sauces');
+
+// Routes avec authentifications
 router.get('/', auth, saucesCtrl.getAllSauces);
 router.post('/', auth, multer, saucesCtrl.createSauce);
 router.get('/:id', auth, saucesCtrl.getOneSauce);
