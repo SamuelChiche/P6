@@ -47,7 +47,7 @@ exports.getAllSauces = (req, res, next) => {
         });
 };
 
-// Requête POST : Permet la modification d'une sauce déjà présente dans la base de données
+// Requête PUT : Permet la modification d'une sauce déjà présente dans la base de données
 exports.modifySauce = (req, res, next) => {
     const cleanSauce = sanitize(req.body.sauce);
     const sauceObject = req.file ?
