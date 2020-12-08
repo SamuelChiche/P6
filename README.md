@@ -1,4 +1,4 @@
-#P6
+# P6
 
 Projet 6 sur 7 du Parcours Développeur Web d'OpenClassrooms.
 
