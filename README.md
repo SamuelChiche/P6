@@ -1,3 +1,5 @@
+#P6
+
 Projet 6 sur 7 du Parcours Développeur Web d'OpenClassrooms.
 
 Construisez une API sécurisée pour une application d'avis gastronomiques.
